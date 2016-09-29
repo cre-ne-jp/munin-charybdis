@@ -1,0 +1,109 @@
+#!/usr/bin/ruby
+
+# ライブラリ読み込み
+#Dir.chdir(File.dirname(__FILE__))
+Dir.chdir('/home/server-admin/git/gitlab/munin-irc/ruby')
+
+require 'bundler/setup'
+require 'irc-socket'
+
+
+# 調査対象サーバー
+SERVER = {
+  'irc.cre.jp'         => 'cre',
+  'irc.egotex.net'     => 'egotex',
+  'irc.kazagakure.net' => 'kazagakure',
+  'irc.r-roman.net'    => 'r-roman',
+  'irc.sougetu.net'    => 'sougetu',
+  't-net.xyz'          => 't-net'
+}
+MAP_ONLY = {
+  'services.cre.jp'    => 'services'
+}
+LUSERS_ONLY = {}
+
+# MAP コマンドを使うか否か
+USE_MAP = true
+
+# 接続パスワード
+PASS = nil
+
+# OPER 権限を得る場合、そのアカウント名とパスワード
+OPER = {
+  name: '',
+  pass: ''
+}
+
+# 接続するサーバアドレス
+TARGET = 'irc.kazagakure.net'
+
+# 引数に config が指定されたとき
+if ARGV[0] == 'config'
+  puts <<__EOT__
+graph_category irc
+graph_title ircd map
+graph_order #{SERVER.values.join(' ')}
+graph_args -l 0
+__EOT__
+
+  SERVER.merge(USE_MAP ? MAP_ONLY : LUSERS_ONLY).each do |host, name|
+    puts("#{name}.label #{host}")
+  end
+
+  exit
+end
+
+
+# MAP コマンドで接続者数を調査する
+def map
+  servers = SERVER.merge(MAP_ONLY)
+  @irc.write('MAP')
+  while line = @irc.read.split
+    case(line[1])
+    when '015'
+      line[3].slice!(/^:/) unless line[3] == ':'
+      mark = line.rindex('Users:')
+      host = line[mark - 3].slice(0..-6)
+      client = line[mark + 1]
+      puts("#{servers[host]}.value #{client}")
+    when '017'
+      break
+    end
+  end
+end
+
+
+# LUSERS コマンドで接続者数を調査する
+def lusers
+  SERVER.merge(LUSERS_ONLY).each do |host, name|
+    @irc.write("LUSERS * #{host}")
+    while line = @irc.read.split
+      if line[1] == '265'
+        puts "#{name}.value #{line[3]}"
+        break
+      end
+    end
+  end
+end
+
+
+# 値の出力
+@irc = IRCSocket.new(TARGET)
+@irc.connect
+
+if @irc.connected?
+  @irc.pass(PASS) if PASS != nil
+  @irc.nick('munin-node')
+  @irc.user('koi-chan', 0, '*', 'munin-node')
+  @irc.oper(OPER[:name], OPER[:pass]) if OPER[:user] != '' and OPER[:pass] != ''
+
+  # MOTD の出力を待機する
+  while line = @irc.read.split
+    break if line[1] == '376'
+  end
+
+  USE_MAP ? map : lusers
+end
+
+@irc.close
+

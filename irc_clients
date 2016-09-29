@@ -1,0 +1,36 @@
+#!/usr/bin/ruby
+
+#Dir.chdir(File.dirname(__FILE__))
+Dir.chdir('/home/server-admin/git/gitlab/munin-irc/ruby')
+
+require 'bundler/setup'
+require 'irc-socket'
+
+if ARGV[0] == 'config'
+  puts <<__EOT__
+graph_category irc
+graph_title ircd clients
+graph_order clients
+graph_args -l 0
+clients.label clients
+clients.draw LINE2
+__EOT__
+  exit
+end
+
+irc = IRCSocket.new('localhost')
+irc.connect
+
+if irc.connected?
+  irc.nick('munin-node')
+  irc.user('munin-node', 0, '*', 'munin-node')
+
+  while line = irc.read.split
+    if line[1] == '265'
+      puts "clients.value #{line[3]}"
+      break
+    end
+  end
+end
+
+irc.close
