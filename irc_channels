@@ -6,6 +6,8 @@ Dir.chdir('/home/server-admin/git/gitlab/munin-irc/ruby')
 require 'bundler/setup'
 require 'irc-socket'
 
+require_relative 'config'
+
 if ARGV[0] == 'config'
   puts <<__EOT__
 graph_category irc
@@ -18,7 +20,7 @@ __EOT__
   exit
 end
 
-irc = IRCSocket.new('localhost')
+irc = IRCSocket.new(TARGET)
 irc.connect
 
 if irc.connected?
