@@ -6,10 +6,11 @@ rvm:
   - 2.1.10
   - 2.2.5
   - 2.3.1
+  - 2.4.0-preview2
 script:
-  - 'bundle exec irc_map'
-  - 'bundle exec irc_channels'
-  - 'bundle exec irc_clients'
+  - 'ruby irc_map'
+  - 'ruby irc_channels'
+  - 'ruby irc_clients'
 notifications:
   irc:
     use_notice: true
