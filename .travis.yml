@@ -8,9 +8,9 @@ rvm:
   - 2.3.1
   - 2.4.0-preview2
 script:
-  - 'ruby irc_map'
-  - 'ruby irc_channels'
-  - 'ruby irc_clients'
+  - 'ruby irc_map config'
+#  - 'ruby irc_channels'
+#  - 'ruby irc_clients'
 notifications:
   irc:
     use_notice: true
