@@ -9,7 +9,7 @@ rvm:
   - 2.4.0-preview2
 script:
   - 'ruby irc_map config'
-  - 'ruby ircmap'
+  - 'ruby irc_map'
   - 'ruby irc_channels config'
   - 'ruby irc_channels'
   - 'ruby irc_clients config'
