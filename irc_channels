@@ -1,13 +1,19 @@
 #!/usr/bin/ruby
 
-#Dir.chdir(File.dirname(__FILE__))
-Dir.chdir('/home/server-admin/git/gitlab/munin-irc/ruby')
+# 自分自身がシンボリックリンクだった場合、本体の格納先に移動する
+# ライブラリなどを読み込むために必要
+if File.ftype(__FILE__) === 'link'
+  Dir.chdir(File.dirname(File.readlink(__FILE__)))
+end
 
 require 'bundler/setup'
 require 'irc-socket'
 
 require_relative 'config'
 
+
+# munin プラグインとしての処理
+# 設定出力を指定された場合、設定値を出力して終了する
 if ARGV[0] == 'config'
   puts <<__EOT__
 graph_category irc
@@ -20,6 +26,8 @@ __EOT__
   exit
 end
 
+
+# プラグインとしての本体の処理
 irc = IRCSocket.new(TARGET)
 irc.connect
 
