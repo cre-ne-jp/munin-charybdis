@@ -17,7 +17,7 @@ require_relative 'config'
 if ARGV[0] == 'config'
   puts <<__EOT__
 graph_category irc
-graph_title ircd clients
+graph_title ircd global clients
 graph_order clients
 graph_args -l 0
 clients.label clients
