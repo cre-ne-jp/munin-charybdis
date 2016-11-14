@@ -36,7 +36,7 @@ if irc.connected?
   irc.user('munin-node', 0, '*', 'munin-node')
 
   while line = irc.read.split
-    if line[1] == '265'
+    if line[1] == '266'
       puts "clients.value #{line[3]}"
       break
     end
