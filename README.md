@@ -18,6 +18,8 @@ sudo vi config.rb
 sudo bundle install --path vendor/bundle --deployment
 cd /etc/munin/plugins
 sudo ln -s /opt/munin-ircmap/irc_map .
+sudo -u munin munin-run irc_map
+sudo -u munin munin-run irc_map config
 sudo systemctl reload munin-node
 ```
 

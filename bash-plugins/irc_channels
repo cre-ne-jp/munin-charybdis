@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# autoconf
+#%# family=auto
+#%# capabilities=autoconf
+if [ "$1" = "autoconf" ]; then
+	echo "yes"
+	exit 0
+fi
+
+source /etc/profile.d/rbenv.sh
+cd /opt/munin-ircmap
+
+# config
+if [ "$1" = "config" ]; then
+	bundle exec ruby irc_channels config
+	exit 0
+fi
+
+# get values
+bundle exec ruby irc_channels
