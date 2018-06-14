@@ -4,16 +4,17 @@ cache: bundler
 bundler_args: --deployment
 rvm:
   - 2.1.10
-  - 2.2.5
-  - 2.3.1
-  - 2.4.0-preview2
+  - 2.2.10
+  - 2.3.7
+  - 2.4.4
+  - 2.5.1
 script:
-  - 'ruby irc_map config'
-  - 'ruby irc_map'
-  - 'ruby irc_channels config'
-  - 'ruby irc_channels'
-  - 'ruby irc_clients config'
-  - 'ruby irc_clients'
+  - 'bundle exec ruby irc_map config'
+  - 'bundle exec ruby irc_map'
+  - 'bundle exec ruby irc_channels config'
+  - 'bundle exec ruby irc_channels'
+  - 'bundle exec ruby irc_clients config'
+  - 'bundle exec ruby irc_clients'
 notifications:
   irc:
     use_notice: true
